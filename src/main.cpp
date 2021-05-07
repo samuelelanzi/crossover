@@ -102,7 +102,7 @@ int main()
 	gp1 << "set style data lines \n";
 	gp1 << "set title \"Crossover Filter - 1000 Hz\" \n";
 	gp1 << "set xlabel \"Time [s]\" \n";
-	gp1 << "set autoscale x \n";
+	gp1 << "set xrange [0 : 0.005] \n";
 	gp1 << "set ylabel \"Amplitude [V]\" \n";
 	gp1 << "set yrange [-3 : 3] \n";
 	gp1 << "set grid \n";
@@ -113,7 +113,7 @@ int main()
 	gp2 << "set style data lines \n";
 	gp2 << "set title \"Crossover Filter - 4000 Hz\" \n";
 	gp2 << "set xlabel \"Time [s]\" \n";
-	gp2 << "set autoscale x \n";
+	gp2 << "set xrange [0 : 0.0015] \n";
 	gp2 << "set ylabel \"Amplitude [V]\" \n";
 	gp2 << "set yrange [-3 : 3] \n";
 	gp2 << "set grid \n";
@@ -124,7 +124,7 @@ int main()
 	gp3 << "set style data lines \n";
 	gp3 << "set title \"Crossover Filter - 6000 Hz\" \n";
 	gp3 << "set xlabel \"Time [s]\" \n";
-	gp3 << "set autoscale x \n";
+	gp3 << "set xrange [0 : 0.001] \n";
 	gp3 << "set ylabel \"Amplitude [V]\" \n";
 	gp3 << "set yrange [-3 : 3] \n";
 	gp3 << "set grid \n";
