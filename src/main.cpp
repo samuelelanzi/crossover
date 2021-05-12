@@ -207,6 +207,10 @@ int main()
     gp6 << "set ylabel \"Phase [deg]\" \n";
     gp6 << "set yrange [-70 : 80] \n";
     gp6 << "set grid \n";
+    gp6 << "f(x) = (180 / pi) * atan( 1 / (2 * pi * A * 1e-9 * x) ) \n";
+    gp6 << "fit [1000 : 5000] f(x) 'Ph2_2.txt' via A \n";
+    gp6 << "g(x) = - (180 / pi) * atan(2 * pi * B * 1e-9 * x) \n";
+    gp6 << "fit [1000 : 5000] g(x) 'Ph3_2.txt' via B \n";
     gp6 << "plot 'Ph1_2.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'Ph2_2.txt' t 'Tweeter' linecolor rgb \"#189CFF\", 'Ph3_2.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", 'Ph2teo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", 'Ph1teo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\"\n";
 
     std::cout << "-----------------------------------------\n";
