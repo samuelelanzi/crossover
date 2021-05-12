@@ -87,6 +87,36 @@ double Ph_C(double const& nu)
 
 int main()
 {
+    std::string a, b;
+    std::string c {"0.002"};
+
+    std::ifstream fin1 {"Am1_1.txt"};
+    std::ofstream foutErr1 {"Am1_1err.txt"};
+
+    std::ifstream fin2 {"Am2_1.txt"};
+    std::ofstream foutErr2 {"Am2_1err.txt"};
+
+    std::ifstream fin3 {"Am3_1.txt"};
+    std::ofstream foutErr3 {"Am3_1err.txt"};
+
+    while(fin1.good()) {
+        fin1 >> a >> b;
+        foutErr1 << a << ' ' << b << ' ' << c << '\n';
+    }
+    fin1.close();
+
+    while(fin2.good()) {
+        fin2 >> a >> b;
+        foutErr2 << a << ' ' << b << ' ' << c << '\n';
+    }
+    fin2.close();
+
+    while(fin3.good()) {
+        fin3 >> a >> b;
+        foutErr3 << a << ' ' << b << ' ' << c << '\n';
+    }
+    fin3.close();
+
     std::ofstream fout1 {"VLteo.txt"};
     std::ofstream fout2 {"VCteo.txt"};
     std::ofstream fout3 {"Ph1teo.txt"};
@@ -148,7 +178,7 @@ int main()
 
     Crossover::replace_comma();
     // Crossover::print_files();
-
+/*
     Gnuplot gp1;
     gp1 << "set style data lines \n";
     gp1 << "set title \"Crossover Filter - 1000 Hz\" \n";
@@ -188,21 +218,28 @@ int main()
     gp4 << "set yrange [-4.5 : 6] \n";
     gp4 << "set grid \n";
     gp4 << "plot 'FGEN_quad_2.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'VRC_quad_2.txt' t 'Tweeter' linecolor rgb \"#189CFF\", 'VRL_quad_2.txt' t 'Woofer' linecolor rgb \"#0ACE6C\"\n";
-
+*/
     Gnuplot gp5;
     gp5 << "set style data lines \n";
     gp5 << "set title \"Frequency Response\" \n";
     gp5 << "set xlabel \"Frequency [Hz]\" \n";
     gp5 << "set ylabel \"Amplitude [V]\" \n";
-    gp5 << "set yrange [0.2 : 3] \n";
+    gp5 << "set yrange [0.2 : 2.9] \n";
     gp5 << "set xrange [1000 : 10000] \n";
     gp5 << "set grid \n";
     gp5 << "h(x) = ( 25 / 12 ) / sqrt( 1 + ( 2 * pi * H * 1e-9 * x ) ** 2 ) \n";
     gp5 << "fit [1000 : 10000] h(x) 'Am3_1.txt' via H \n";
     gp5 << "k(x) = ( 25 / 12 ) / sqrt( 1 + ( 1 / ( 2 * pi * K * 1e-9 * x ) ** 2 ) ) \n";
     gp5 << "fit [1000 : 10000] k(x) 'Am2_1.txt' via K \n";
-    gp5 << "plot 'Am1_1.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'Am2_1.txt' t 'Tweeter' linecolor rgb \"#189CFF\", 'Am3_1.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", 'VCteo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", h(x), 'VLteo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\", k(x)\n";
-
+    gp5 << "plot 'Am1_1.txt' lw 7 linecolor rgb \"#70FF6C6C\" notitle, "
+        << " 'Am1_1.txt' t 'FGEN' linecolor rgb \"#FF6C6C\" , "
+        << " 'Am2_1.txt' lw 7 linecolor rgb \"#70189CFF\" notitle, "
+        << " 'Am2_1.txt' t 'Tweeter' linecolor rgb \"#189CFF\", "
+        << " 'Am3_1.txt' lw 7 linecolor rgb \"#700ACE6C\" notitle, "
+        << " 'Am3_1.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", "
+        << " 'VCteo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", " 
+        << " 'VLteo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\"\n";
+/*
     Gnuplot gp6;
     gp6 << "set style data lines \n";
     gp6 << "set title \"Phase Analysis\" \n";
@@ -232,4 +269,5 @@ int main()
     std::cout << "-----------------------------------------\n";
     std::cout << "|  R_IC   =      201  +/-   1      Ohm  | \n";
     std::cout << "-----------------------------------------\n";
+    */
 }
