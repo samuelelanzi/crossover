@@ -197,6 +197,10 @@ int main()
     gp5 << "set yrange [0.2 : 3] \n";
     gp5 << "set xrange [1000 : 10000] \n";
     gp5 << "set grid \n";
+    gp5 << "h(x) = ( 25 / 12 ) / sqrt( 1 + (2 * pi * H * 1e-9 * x)**2 ) \n";
+    gp5 << "fit [1000 : 10000] h(x) 'Am3_1.txt' via H \n";
+    gp5 << "k(x) = ( 25 / 12 ) / sqrt( 1 + ( 1 / (2 * pi * K * 1e-9 * x)**2 ) ) \n";
+    gp5 << "fit [1000 : 10000] k(x) 'Am2_1.txt' via K \n";
     gp5 << "plot 'Am1_1.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'Am2_1.txt' t 'Tweeter' linecolor rgb \"#189CFF\", 'Am3_1.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", 'VCteo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", 'VLteo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\"\n";
 
     Gnuplot gp6;
