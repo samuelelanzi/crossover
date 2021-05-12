@@ -201,7 +201,7 @@ int main()
     gp5 << "fit [1000 : 10000] h(x) 'Am3_1.txt' via H \n";
     gp5 << "k(x) = ( 25 / 12 ) / sqrt( 1 + ( 1 / ( 2 * pi * K * 1e-9 * x ) ** 2 ) ) \n";
     gp5 << "fit [1000 : 10000] k(x) 'Am2_1.txt' via K \n";
-    gp5 << "plot 'Am1_1.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'Am2_1.txt' t 'Tweeter' linecolor rgb \"#189CFF\", 'Am3_1.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", 'VCteo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", 'VLteo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\"\n";
+    gp5 << "plot 'Am1_1.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'Am2_1.txt' t 'Tweeter' linecolor rgb \"#189CFF\", 'Am3_1.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", 'VCteo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", h(x), 'VLteo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\", k(x)\n";
 
     Gnuplot gp6;
     gp6 << "set style data lines \n";
@@ -215,7 +215,7 @@ int main()
     gp6 << "fit [1000 : 5000] f(x) 'Ph2_2.txt' via A \n";
     gp6 << "g(x) = - ( 180 / pi ) * atan( 2 * pi * B * 1e-9 * x ) \n";
     gp6 << "fit [1000 : 5000] g(x) 'Ph3_2.txt' via B \n";
-    gp6 << "plot 'Ph1_2.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'Ph2_2.txt' t 'Tweeter' linecolor rgb \"#189CFF\", 'Ph3_2.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", 'Ph2teo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", 'Ph1teo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\"\n";
+    gp6 << "plot 'Ph1_2.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'Ph2_2.txt' t 'Tweeter' linecolor rgb \"#189CFF\", f(x), 'Ph3_2.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", g(x), 'Ph2teo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", 'Ph1teo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\"\n";
 
     std::cout << "-----------------------------------------\n";
     std::cout << "|    L    =     47.2  +/-  0.5      mH  | \n";
