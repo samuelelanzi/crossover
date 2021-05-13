@@ -60,7 +60,7 @@ std::vector<std::string> Crossover::filename_ {};
 double V_L(double const& nu)
 {
     double r = 1000. / 1200.;
-    double V = 2.5;
+    double V = 2.395;
     double t_L = 0.04719 / 1200.;
     return (r * V) / std::sqrt(1 + std::pow( 2 * M_PI * nu * t_L, 2 ) );
 }
@@ -68,7 +68,7 @@ double V_L(double const& nu)
 double V_C(double const& nu)
 {
     double r = 1000. / 1200.;
-    double V = 2.5;
+    double V = 2.395;
     double t_C =  33.19 * 1e-9 * 1200.;
     return (r * V) / std::sqrt( 1 + (1 / std::pow( 2 * M_PI * nu * t_C, 2 ) ) );
 }
@@ -99,28 +99,55 @@ int main()
     std::ifstream fin3 {"Am3_1.txt"};
     std::ofstream foutErr3 {"Am3_1err.txt"};
 
+    std::ifstream fin4 {"Ph2_2.txt"};
+    std::ofstream foutErr4 {"Ph22E.txt"};
+
+    std::ifstream fin5 {"Ph3_2.txt"};
+    std::ofstream foutErr5 {"Ph32E.txt"};
+
+    std::ofstream fout1 {"VLteo.txt"};
+    std::ofstream fout2 {"VCteo.txt"};
+    std::ofstream fout3 {"Ph1teo.txt"};
+    std::ofstream fout4 {"Ph2teo.txt"};
+
     while(fin1.good()) {
         fin1 >> a >> b;
         foutErr1 << a << ' ' << b << ' ' << c << '\n';
     }
     fin1.close();
+    foutErr1.close();
 
     while(fin2.good()) {
         fin2 >> a >> b;
         foutErr2 << a << ' ' << b << ' ' << c << '\n';
     }
     fin2.close();
+    foutErr2.close();
 
     while(fin3.good()) {
         fin3 >> a >> b;
         foutErr3 << a << ' ' << b << ' ' << c << '\n';
     }
     fin3.close();
+    foutErr3.close();
 
-    std::ofstream fout1 {"VLteo.txt"};
-    std::ofstream fout2 {"VCteo.txt"};
-    std::ofstream fout3 {"Ph1teo.txt"};
-    std::ofstream fout4 {"Ph2teo.txt"};
+    while(fin4.good()) {
+        fin4 >> a >> b;
+        double nu = std::stod(a);
+        double dPhi = 180 * nu / 200000;
+        foutErr4 << a << ' ' << b << ' ' << dPhi << '\n';
+    }
+    fin4.close();
+    foutErr4.close();
+
+    while(fin5.good()) {
+        fin5 >> a >> b;
+        double nu = std::stod(a);
+        double dPhi = 180 * nu / 200000;
+        foutErr5 << a << ' ' << b << ' ' << dPhi << '\n';
+    }
+    fin5.close();
+    foutErr5.close();
 
     for (int i{}; i != 1e5; ++i) {
         fout1 << static_cast<double>(i) / 10. << ' ' << V_L(static_cast<double>(i) / 10.) << '\n';
@@ -178,7 +205,7 @@ int main()
 
     Crossover::replace_comma();
     // Crossover::print_files();
-/*
+
     Gnuplot gp1;
     gp1 << "set style data lines \n";
     gp1 << "set title \"Crossover Filter - 1000 Hz\" \n";
@@ -218,7 +245,7 @@ int main()
     gp4 << "set yrange [-4.5 : 6] \n";
     gp4 << "set grid \n";
     gp4 << "plot 'FGEN_quad_2.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'VRC_quad_2.txt' t 'Tweeter' linecolor rgb \"#189CFF\", 'VRL_quad_2.txt' t 'Woofer' linecolor rgb \"#0ACE6C\"\n";
-*/
+
     Gnuplot gp5;
     gp5 << "set style data lines \n";
     gp5 << "set title \"Frequency Response\" \n";
@@ -231,15 +258,15 @@ int main()
     gp5 << "fit [1000 : 10000] h(x) 'Am3_1.txt' via H \n";
     gp5 << "k(x) = ( 25 / 12 ) / sqrt( 1 + ( 1 / ( 2 * pi * K * 1e-9 * x ) ** 2 ) ) \n";
     gp5 << "fit [1000 : 10000] k(x) 'Am2_1.txt' via K \n";
-    gp5 << "plot 'Am1_1.txt' lw 7 linecolor rgb \"#70FF6C6C\" notitle, "
+    gp5 << "plot 'Am1_1.txt' lw 7 linecolor rgb \"#95FF6C6C\" notitle, "
         << " 'Am1_1.txt' t 'FGEN' linecolor rgb \"#FF6C6C\" , "
-        << " 'Am2_1.txt' lw 7 linecolor rgb \"#70189CFF\" notitle, "
+        << " 'Am2_1.txt' lw 7 linecolor rgb \"#95189CFF\" notitle, "
         << " 'Am2_1.txt' t 'Tweeter' linecolor rgb \"#189CFF\", "
-        << " 'Am3_1.txt' lw 7 linecolor rgb \"#700ACE6C\" notitle, "
+        << " 'Am3_1.txt' lw 7 linecolor rgb \"#950ACE6C\" notitle, "
         << " 'Am3_1.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", "
         << " 'VCteo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", " 
         << " 'VLteo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\"\n";
-/*
+
     Gnuplot gp6;
     gp6 << "set style data lines \n";
     gp6 << "set title \"Phase Analysis\" \n";
@@ -252,7 +279,13 @@ int main()
     gp6 << "fit [1000 : 5000] f(x) 'Ph2_2.txt' via A \n";
     gp6 << "g(x) = - ( 180 / pi ) * atan( 2 * pi * B * 1e-9 * x ) \n";
     gp6 << "fit [1000 : 5000] g(x) 'Ph3_2.txt' via B \n";
-    gp6 << "plot 'Ph1_2.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'Ph2_2.txt' t 'Tweeter' linecolor rgb \"#189CFF\", f(x), 'Ph3_2.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", g(x), 'Ph2teo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", 'Ph1teo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\"\n";
+    gp6 << "plot 'Ph1_2.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", "
+        << " 'Ph22E.txt' using 1:($2-$3):($2+$3) with filledcurves linecolor rgb \"#95189CFF\" notitle, "
+        << " 'Ph32E.txt' using 1:($2-$3):($2+$3) with filledcurves linecolor rgb \"#950ACE6C\" notitle, "
+        << "'Ph2_2.txt' t 'Tweeter' linecolor rgb \"#189CFF\", "
+        << "'Ph3_2.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", "
+        << "'Ph2teo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", "
+        << "'Ph1teo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\"\n";
 
     std::cout << "-----------------------------------------\n";
     std::cout << "|    L    =     47.2  +/-  0.5      mH  | \n";
@@ -269,5 +302,4 @@ int main()
     std::cout << "-----------------------------------------\n";
     std::cout << "|  R_IC   =      201  +/-   1      Ohm  | \n";
     std::cout << "-----------------------------------------\n";
-    */
 }
