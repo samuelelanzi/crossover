@@ -7,8 +7,8 @@ class Crossover
 private:
     static std::vector<std::string> filename_;
     static double RI_;
-    static double L_ , DL_;
-    static double C_ , DC_;
+    static double L_  , DL_;
+    static double C_  , DC_;
     static double RL_ , DRL_, RIL_, DRIL_;
     static double RC_ , DRC_, RIC_, DRIC_;
 
@@ -23,10 +23,20 @@ public:
        add_txt(filename); 
     }
 
-    std::vector<std::string> getFiles()
-    {
-        return filename_;
-    }
+    std::vector<std::string> getFiles() { return filename_; }
+    static double getRI()   { return RI_; }
+    static double getL()    { return L_; }
+    static double getDL()   { return DL_; }
+    static double getC()    { return C_; }
+    static double getDC()   { return DC_; }
+    static double getRL()   { return RL_; }
+    static double getDRL()  { return DRL_; }
+    static double getRIL()  { return RIL_; }
+    static double getDRIL() { return DRIL_; }
+    static double getRC()   { return RC_; }
+    static double getDRC()  { return DRC_; }
+    static double getRIC()  { return RIC_; }
+    static double getDRIC() { return DRIC_; }
 
     static void replace_comma()
     {
@@ -56,33 +66,46 @@ public:
 };
 
 std::vector<std::string> Crossover::filename_ {};
+double Crossover::RI_   = 50.;
+double Crossover::L_    = 47.2 * 1e-3;
+double Crossover::DL_   = 0.5 * 1e-3;
+double Crossover::C_    = 33.2 * 1e-9;
+double Crossover::DC_   = 0.3 * 1e-9;
+double Crossover::RL_   = 994.;
+double Crossover::DRL_  = 5.;
+double Crossover::RIL_  = 198.8;
+double Crossover::DRIL_ = 0.5;
+double Crossover::RC_   = 993.;
+double Crossover::DRC_  = 5.;
+double Crossover::RIC_  = 201.;
+double Crossover::DRIC_ = 1.;
 
 double V_L(double const& nu)
 {
-    double r = 1000. / 1200.;
+    double r = Crossover::getRL() / ( Crossover::getRL() + Crossover::getRIL() );
     double V = 2.395;
-    double t_L = 0.04719 / 1200.;
-    return (r * V) / std::sqrt(1 + std::pow( 2 * M_PI * nu * t_L, 2 ) );
+    double t_L = Crossover::getL() / ( Crossover::getRL() + Crossover::getRIL() );
+    return (r * V) / std::sqrt( 1 + std::pow( 2 * M_PI * nu * t_L, 2 ) );
 }
 
 double V_C(double const& nu)
 {
-    double r = 1000. / 1200.;
+    double r = Crossover::getRL() / ( Crossover::getRL() + Crossover::getRIL() );
     double V = 2.395;
-    double t_C =  33.19 * 1e-9 * 1200.;
-    return (r * V) / std::sqrt( 1 + (1 / std::pow( 2 * M_PI * nu * t_C, 2 ) ) );
+    double t_C =  Crossover::getC() * ( Crossover::getRL() + Crossover::getRIL() );
+    return (r * V) / std::sqrt( 1 + ( 1 / std::pow( 2 * M_PI * nu * t_C, 2 ) ) );
 }
 
 double Ph_L(double const& nu)
 {
-    double t_L = 0.04719 / 1200.;
+    double t_L = Crossover::getL() / ( Crossover::getRL() + Crossover::getRIL() );
     return ( - std::atan( 2 * M_PI * t_L * nu * 1 ) * RADTODEG );
 }
 
 double Ph_C(double const& nu)
 {
-    double t_C =  33.19e-9 * 1200.;
-    return ( std::atan( 1 / (2 * M_PI * t_C * nu) ) * RADTODEG );
+    double t_C =  Crossover::getC() * ( Crossover::getRL() + Crossover::getRIL() );
+    return ( std::atan( 1 / ( 2 * M_PI * t_C * nu ) ) * RADTODEG );
 }
 
 int main()
@@ -90,19 +113,19 @@ int main()
     std::string a, b;
     std::string c {"0.002"};
 
-    std::ifstream fin1 {"Am1_1.txt"};
+    std::ifstream fin1     {"Am1_1.txt"};
     std::ofstream foutErr1 {"Am1_1err.txt"};
 
-    std::ifstream fin2 {"Am2_1.txt"};
+    std::ifstream fin2     {"Am2_1.txt"};
     std::ofstream foutErr2 {"Am2_1err.txt"};
 
-    std::ifstream fin3 {"Am3_1.txt"};
+    std::ifstream fin3     {"Am3_1.txt"};
     std::ofstream foutErr3 {"Am3_1err.txt"};
 
-    std::ifstream fin4 {"Ph2_2.txt"};
+    std::ifstream fin4     {"Ph2_2.txt"};
     std::ofstream foutErr4 {"Ph22E.txt"};
 
-    std::ifstream fin5 {"Ph3_2.txt"};
+    std::ifstream fin5     {"Ph3_2.txt"};
     std::ofstream foutErr5 {"Ph32E.txt"};
 
     std::ofstream fout1 {"VLteo.txt"};
@@ -259,13 +282,13 @@ int main()
     gp5 << "k(x) = ( 25 / 12 ) / sqrt( 1 + ( 1 / ( 2 * pi * K * 1e-9 * x ) ** 2 ) ) \n";
     gp5 << "fit [1000 : 10000] k(x) 'Am2_1.txt' via K \n";
     gp5 << "plot 'Am1_1.txt' lw 7 linecolor rgb \"#95FF6C6C\" notitle, "
-        << " 'Am1_1.txt' t 'FGEN' linecolor rgb \"#FF6C6C\" , "
-        << " 'Am2_1.txt' lw 7 linecolor rgb \"#95189CFF\" notitle, "
-        << " 'Am2_1.txt' t 'Tweeter' linecolor rgb \"#189CFF\", "
-        << " 'Am3_1.txt' lw 7 linecolor rgb \"#950ACE6C\" notitle, "
-        << " 'Am3_1.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", "
-        << " 'VCteo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", " 
-        << " 'VLteo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\"\n";
+        << "'Am1_1.txt' t 'FGEN' linecolor rgb \"#FF6C6C\" , "
+        << "'Am2_1.txt' lw 7 linecolor rgb \"#95189CFF\" notitle, "
+        << "'Am2_1.txt' t 'Tweeter' linecolor rgb \"#189CFF\", "
+        << "'Am3_1.txt' lw 7 linecolor rgb \"#950ACE6C\" notitle, "
+        << "'Am3_1.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", "
+        << "'VCteo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", " 
+        << "'VLteo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\"\n";
 
     Gnuplot gp6;
     gp6 << "set style data lines \n";
@@ -280,8 +303,8 @@ int main()
     gp6 << "g(x) = - ( 180 / pi ) * atan( 2 * pi * B * 1e-9 * x ) \n";
     gp6 << "fit [1000 : 5000] g(x) 'Ph3_2.txt' via B \n";
     gp6 << "plot 'Ph1_2.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", "
-        << " 'Ph22E.txt' using 1:($2-$3):($2+$3) with filledcurves linecolor rgb \"#95189CFF\" notitle, "
-        << " 'Ph32E.txt' using 1:($2-$3):($2+$3) with filledcurves linecolor rgb \"#950ACE6C\" notitle, "
+        << "'Ph22E.txt' using 1:($2-$3):($2+$3) with filledcurves linecolor rgb \"#95189CFF\" notitle, "
+        << "'Ph32E.txt' using 1:($2-$3):($2+$3) with filledcurves linecolor rgb \"#950ACE6C\" notitle, "
         << "'Ph2_2.txt' t 'Tweeter' linecolor rgb \"#189CFF\", "
         << "'Ph3_2.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", "
         << "'Ph2teo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", "
