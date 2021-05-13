@@ -269,6 +269,18 @@ int main()
     gp4 << "set grid \n";
     gp4 << "plot 'FGEN_quad_2.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'VRC_quad_2.txt' t 'Tweeter' linecolor rgb \"#189CFF\", 'VRL_quad_2.txt' t 'Woofer' linecolor rgb \"#0ACE6C\"\n";
 
+    Gnuplot gp7;
+    gp7 << "set style data lines \n";
+    gp7 << "set title \"Crossover Filter - Quadratic Wave - 1000 Hz\" \n";
+    gp7 << "set xlabel \"Time [s]\" \n";
+    gp7 << "set ylabel \"Amplitude [V]\" \n";
+    gp7 << "set yrange [-4 : 4] \n";
+    gp7 << "set xrange [0 : 0.0003] \n";
+    gp7 << "set grid \n";
+    gp7 << "q(x) = Q * exp(-(x / T * 1e-9)) \n";
+    gp7 << "fit q(x) 'Fit2_1.txt' via Q, T \n";
+    gp7 << "plot 'Fit2_1.txt' , 'Fit3_1.txt'\n";
+
     Gnuplot gp5;
     gp5 << "set style data lines \n";
     gp5 << "set title \"Frequency Response\" \n";
