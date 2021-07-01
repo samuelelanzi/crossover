@@ -102,6 +102,12 @@ double Ph_L(double const& nu)
     return ( - std::atan( 2 * M_PI * t_L * nu * 1 ) * RADTODEG );
 }
 
+double PhLFit(double const& nu)
+{
+    double t_L = 3.497389e-5;
+    return ( - std::atan( 2 * M_PI * t_L * nu * 1 ) * RADTODEG );
+}
+
 double Ph_C(double const& nu)
 {
     double t_C =  Crossover::getC() * ( Crossover::getRL() + Crossover::getRIL() );
@@ -122,10 +128,10 @@ int main()
     std::ifstream fin3     {"Am3_1.txt"};
     std::ofstream foutErr3 {"Am3_1err.txt"};
 
-    std::ifstream fin4     {"Ph2_2.txt"};
+    std::ifstream fin4     {"PH2.txt"};
     std::ofstream foutErr4 {"Ph22E.txt"};
 
-    std::ifstream fin5     {"Ph3_2.txt"};
+    std::ifstream fin5     {"PH3.txt"};
     std::ofstream foutErr5 {"Ph32E.txt"};
 
     std::ofstream fout1 {"VLteo.txt"};
@@ -157,7 +163,7 @@ int main()
     while(fin4.good()) {
         fin4 >> a >> b;
         double nu = std::stod(a);
-        double dPhi = 180 * nu / 200000;
+        double dPhi = 180 * nu / 400000;
         foutErr4 << a << ' ' << b << ' ' << dPhi << '\n';
     }
     fin4.close();
@@ -166,7 +172,7 @@ int main()
     while(fin5.good()) {
         fin5 >> a >> b;
         double nu = std::stod(a);
-        double dPhi = 180 * nu / 200000;
+        double dPhi = 180 * nu / 400000;
         foutErr5 << a << ' ' << b << ' ' << dPhi << '\n';
     }
     fin5.close();
@@ -178,6 +184,8 @@ int main()
         fout3 << static_cast<double>(i) / 10. << ' ' << Ph_L(static_cast<double>(i) / 10.) << '\n';
         fout4 << static_cast<double>(i) / 10. << ' ' << Ph_C(static_cast<double>(i) / 10.) << '\n';
     }
+
+    //for(int i{}; )
     
     fout1.close();
     fout2.close();
@@ -212,6 +220,15 @@ int main()
     Crossover::add_txt("Am2_2.txt");
     Crossover::add_txt("Am3_2.txt");
 
+    Crossover::add_txt("AMP1.txt");
+    Crossover::add_txt("AMP2.txt");
+    Crossover::add_txt("AMP3.txt");
+
+    Crossover::add_txt("PH1.txt");
+    Crossover::add_txt("PH2.txt");
+    Crossover::add_txt("PH3.txt");
+    Crossover::add_txt("PHSUM.txt");
+
     Crossover::add_txt("Fit2_1.txt");
     Crossover::add_txt("Fit3_1.txt");
 
@@ -225,10 +242,18 @@ int main()
     Crossover::add_txt("Ph1_2.txt");
     Crossover::add_txt("Ph2_2.txt");
     Crossover::add_txt("Ph3_2.txt");
+    
+    Crossover::add_txt("FgenAmplMod.txt");
+    Crossover::add_txt("VCAmplMod.txt");
+    Crossover::add_txt("VLAmplMod.txt");
+
+    Crossover::add_txt("FgenFreqMod.txt");
+    Crossover::add_txt("VCFreqMod.txt");
+    Crossover::add_txt("VLFreqMod.txt");
 
     Crossover::replace_comma();
     // Crossover::print_files();
-
+/*
     Gnuplot gp1;
     gp1 << "set style data lines \n";
     gp1 << "set title \"Crossover Filter - 1000 Hz\" \n";
@@ -267,61 +292,106 @@ int main()
     gp4 << "set ylabel \"Amplitude [V]\" \n";
     gp4 << "set yrange [-4.5 : 6] \n";
     gp4 << "set grid \n";
-    gp4 << "plot 'FGEN_quad_2.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'VRC_quad_2.txt' t 'Tweeter' linecolor rgb \"#189CFF\", 'VRL_quad_2.txt' t 'Woofer' linecolor rgb \"#0ACE6C\"\n";
-
-    Gnuplot gp7;
-    gp7 << "set style data lines \n";
-    gp7 << "set title \"Crossover Filter - Quadratic Wave - 1000 Hz\" \n";
-    gp7 << "set xlabel \"Time [s]\" \n";
-    gp7 << "set ylabel \"Amplitude [V]\" \n";
-    gp7 << "set yrange [-4 : 4] \n";
-    gp7 << "set xrange [0 : 0.0003] \n";
-    gp7 << "set grid \n";
-    gp7 << "q(x) = Q * exp(-(x / T * 1e-9)) \n";
-    gp7 << "fit q(x) 'Fit2_1.txt' via Q, T \n";
-    gp7 << "plot 'Fit2_1.txt' , 'Fit3_1.txt'\n";
+    gp4 << "plot 'FGEN_quad_2.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'VRL_quad_2.txt' t 'Tweeter' linecolor rgb \"#189CFF\", 'VRC_quad_2.txt' t 'Woofer' linecolor rgb \"#0ACE6C\"\n";
 
     Gnuplot gp5;
     gp5 << "set style data lines \n";
-    gp5 << "set title \"Frequency Response\" \n";
+    gp5 << "set title \"Frequency Response - Reduced Range\" \n";
     gp5 << "set xlabel \"Frequency [Hz]\" \n";
     gp5 << "set ylabel \"Amplitude [V]\" \n";
-    gp5 << "set yrange [0.2 : 2.9] \n";
-    gp5 << "set xrange [1000 : 10000] \n";
+    gp5 << "set yrange [1.35 : 1.45] \n";
+    gp5 << "set xrange [3850 : 4150] \n";
     gp5 << "set grid \n";
     gp5 << "h(x) = ( 25 / 12 ) / sqrt( 1 + ( 2 * pi * H * 1e-9 * x ) ** 2 ) \n";
     gp5 << "fit [1000 : 10000] h(x) 'Am3_1.txt' via H \n";
     gp5 << "k(x) = ( 25 / 12 ) / sqrt( 1 + ( 1 / ( 2 * pi * K * 1e-9 * x ) ** 2 ) ) \n";
     gp5 << "fit [1000 : 10000] k(x) 'Am2_1.txt' via K \n";
-    gp5 << "plot 'Am1_1.txt' lw 7 linecolor rgb \"#95FF6C6C\" notitle, "
-        << "'Am1_1.txt' t 'FGEN' linecolor rgb \"#FF6C6C\" , "
-        << "'Am2_1.txt' lw 7 linecolor rgb \"#95189CFF\" notitle, "
+    gp5 << "plot "
+        << "'Am2_1.txt' lw 15 linecolor rgb \"#95189CFF\" notitle, "
+        << "'Am2_1.txt' t 'Tweeter' lw 2 linecolor rgb \"#189CFF\", "
+        << "'Am3_1.txt' lw 15 linecolor rgb \"#950ACE6C\" notitle, "
+        << "'Am3_1.txt' t 'Woofer' lw 2 linecolor rgb \"#0ACE6C\" ,"
+        << "k(x) t 'Tweeter Atteso' lw 2 linecolor rgb \"#00599C\", " 
+        << "h(x) t 'Woofer Atteso' lw 2 linecolor rgb \"#108D4F\", "
+        << "'nu_cross_fit.txt' using 1:2:3 with xerrorbars t 'Crossover' linecolor rgb \"#E83508\"\n";
+
+    Gnuplot gp5_;
+    gp5_ << "set style data lines \n";
+    gp5_ << "set title \"Frequency Response - Data Fit\" \n";
+    gp5_ << "set xlabel \"Frequency [Hz]\" \n";
+    gp5_ << "set ylabel \"Amplitude [V]\" \n";
+    gp5_ << "set yrange [0.2 : 2.3] \n";
+    gp5_ << "set xrange [1000 : 10000] \n";
+    gp5_ << "set grid \n";
+    gp5_ << "h(x) = ( 25 / 12 ) / sqrt( 1 + ( 2 * pi * H *1e-9* x ) ** 2 ) \n";
+    gp5_ << "fit [1000 : 10000] h(x) 'Am3_1.txt' via H \n";
+    gp5_ << "k(x) = ( 25 / 12 ) / sqrt( 1 + ( 1 / ( 2 * pi * K *1e-9* x ) ** 2 ) ) \n";
+    gp5_ << "fit [1000 : 10000] k(x) 'Am2_1.txt' via K \n";
+    gp5_ << "plot "
         << "'Am2_1.txt' t 'Tweeter' linecolor rgb \"#189CFF\", "
-        << "'Am3_1.txt' lw 7 linecolor rgb \"#950ACE6C\" notitle, "
-        << "'Am3_1.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", "
-        << "'VCteo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", " 
-        << "'VLteo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\"\n";
+        << "'Am3_1.txt' t 'Woofer' linecolor rgb \"#0ACE6C\","
+        << "k(x) t 'Tweeter Fit' linecolor rgb \"#00599C\", " 
+        << "h(x) t 'Woofer Fit' linecolor rgb \"#108D4F\"\n";
 
     Gnuplot gp6;
+    gp6 << "set pointsize 0.3 \n";
     gp6 << "set style data lines \n";
-    gp6 << "set title \"Phase Analysis\" \n";
+    gp6 << "set title \"Phase Analysis - Fit\" \n";
     gp6 << "set xlabel \"Frequency [Hz]\" \n";
     gp6 << "set xrange [1000 : 10000] \n";
     gp6 << "set ylabel \"Phase [deg]\" \n";
     gp6 << "set yrange [-70 : 80] \n";
     gp6 << "set grid \n";
-    gp6 << "f(x) = ( 180 / pi ) * atan( 1 / ( 2 * pi * A * 1e-9 * x ) ) \n";
-    gp6 << "fit [1000 : 5000] f(x) 'Ph2_2.txt' via A \n";
-    gp6 << "g(x) = - ( 180 / pi ) * atan( 2 * pi * B * 1e-9 * x ) \n";
-    gp6 << "fit [1000 : 5000] g(x) 'Ph3_2.txt' via B \n";
-    gp6 << "plot 'Ph1_2.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", "
+    gp6 << "f(x) = ( 180 / pi ) * atan( 1 / ( 2 * pi * A * 1e-6 * x ) ) \n";
+    gp6 << "fit [3000 : 5000] f(x) 'PH2.txt' via A \n";
+    gp6 << "g(x) = - ( 180 / pi ) * atan( 2 * pi * B * 1e-6 * x ) \n";
+    gp6 << "fit [3000 : 5000] g(x) 'PH3.txt' via B \n";
+    gp6 << "s(x) = ( 180 / pi ) * atan( 1 / ( 2 * pi * L* 1e-6 * x ) ) - ( 180 / pi ) * atan( 2 * pi * S * 1e-6 * x ) \n";
+    gp6 << "fit [3500 : 4500] s(x) 'PHSUM.txt' via L, S \n";
+    gp6 << "plot "
         << "'Ph22E.txt' using 1:($2-$3):($2+$3) with filledcurves linecolor rgb \"#95189CFF\" notitle, "
         << "'Ph32E.txt' using 1:($2-$3):($2+$3) with filledcurves linecolor rgb \"#950ACE6C\" notitle, "
-        << "'Ph2_2.txt' t 'Tweeter' linecolor rgb \"#189CFF\", "
-        << "'Ph3_2.txt' t 'Woofer' linecolor rgb \"#0ACE6C\", "
-        << "'Ph2teo.txt' t 'Tweeter Atteso' linecolor rgb \"#00599C\", "
-        << "'Ph1teo.txt' t 'Woofer Atteso' linecolor rgb \"#108D4F\"\n";
+        << "'PH2.txt' t 'Tweeter' lw 1.5 linecolor rgb \"#189CFF\", "
+        << "'PH3.txt' t 'Woofer' lw 1.5 linecolor rgb \"#0ACE6C\", "
+        << "f(x) t 'Tweeter Fit' lw 1.5 linecolor rgb \"#00599C\","
+        << "g(x) t 'Woofer Fit' lw 1.5 linecolor rgb \"#108D4F\","
+        << "s(x) t 'Somma Fit' lw 1.5 linecolor rgb \"#30FF00FF\",'nu_cross_fit.txt' using 1:2:3 t 'Crossover' with xerr pt 7 linecolor black,"
+        << "\n";
 
+    Gnuplot gp7;
+    gp7 << "set style data lines \n";
+    gp7 << "set title \"Crossover Filter - Variable Amplitude\" \n";
+    gp7 << "set xlabel \"Time [s]\" \n";
+    gp7 << "set autoscale x \n";
+    gp7 << "set ylabel \"Amplitude [V]\" \n";
+    gp7 << "set yrange [-3.5 : 3.5] \n";
+    gp7 << "set grid \n";
+    gp7 << "plot 'FgenAmplMod.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'VCAmplMod.txt' t 'Tweeter' linecolor rgb \"#189CFF\", 'VLAmplMod.txt' t 'Woofer' linecolor rgb \"#0ACE6C\"\n";
+
+    Gnuplot gp8;
+    gp8 << "set style data lines \n";
+    gp8 << "set title \"Crossover Filter - Sine Sweep (3 kHz - 5 kHz)\" \n";
+    gp8 << "set xlabel \"Time [s]\" \n";
+    gp8 << "set xrange [0:0.00375] \n";
+    gp8 << "set ylabel \"Amplitude [V]\" \n";
+    gp8 << "set yrange [-1.3 : 1.3] \n";
+    gp8 << "set grid \n";
+    gp8 << "plot 'FgenFreqMod.txt' t 'FGEN' linecolor rgb \"#FF6C6C\", 'VCFreqMod.txt' t 'Tweeter' linecolor rgb \"#189CFF\", 'VLFreqMod.txt' t 'Woofer' linecolor rgb \"#0ACE6C\"\n";
+*/
+
+    Gnuplot gp9;
+    gp9 << "set style data lines \n";
+    gp9 << "set title \"Crossover Filter - Square Wave\" \n";
+    gp9 << "set xlabel \"Time [s]\" \n";
+    // gp8 << "set xrange [0:0.00375] \n";
+    gp9 << "set ylabel \"Amplitude [V]\" \n";
+    // gp8 << "set yrange [-1.3 : 1.3] \n";
+    gp9 << "set grid \n";
+    gp9 << "f(x) = 4 * exp(-x / C) \n";
+    gp9 << "fit f(x) 'Fit2_1.txt' via C \n";
+    gp9 << "g(x) = 4*(-1 + exp(-x / L) )\n";
+    gp9 << "fit g(x) 'Fit3_1.txt' via L \n";
+    gp9 << "plot 'Fit2_1.txt' t 'Tweeter' linecolor rgb \"#189CFF\", 'Fit3_1.txt' t 'Woofer' linecolor rgb \"#0ACE6C\"\n";
     std::cout << "-----------------------------------------\n";
     std::cout << "|    L    =     47.2  +/-  0.5      mH  | \n";
     std::cout << "-----------------------------------------\n";
